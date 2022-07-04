@@ -3,18 +3,18 @@ import React, { useState, useEffect } from "react";
 const ToDoList = () => {
 	const [inputValue, setInputValue] = useState("");
 	const [listValue, setListValue] = useState([]);
-	const [counterValue, setCounterValue] = useState(0);
+	
 
 	useEffect(() => {
-		fetch("https://gorest.co.in/public/v2/users/")
+		fetch("https://assets.breatheco.de/apis/fake/todos/user/oriol")
 			.then((resp) => {
 				console.log(resp.ok); // will be true if the response is successfull
 				console.log(resp.status); // the status code = 200 or code = 400 etc.
 				return resp.json(); // (returns promise) will try to parse the result as json as return a promise that you can .then for results
 			})
 			.then((data) => {
-				temporalData = data;
-				setInputValue(temporalData);
+			
+				setListValue(data);
 				console.log(data); //this will print on the console the exact object received from the server
 			})
 			.catch((error) => {
@@ -27,21 +27,21 @@ const ToDoList = () => {
 		//if (!inputValue.map((x) => x.label).includes(text) && text.trim() != "") {
 		//	setListValue([...listValue, { label: text, done: false }]);
 			//  Retorna la API con las tareas almacenadas  despues de actualizar la pagina
-			fetch("https://gorest.co.in/public/v2/users/", {
+			fetch("https://assets.breatheco.de/apis/fake/todos/user/oriol", {
 				method: "PUT",
 				body: JSON.stringify([...listValue, { label: text, done: false }]),
 				headers: {
 					"Content-Type": "application/json",
 				},
 			});
-			setListValue("");
+			setListValue([...listValue, { label: text, done: false }]);
 		
 	};
 
 	const HandleKey = (event) => {
 		if (event.key === "Enter" && inputValue !== " " && inputValue !== "") {
 			addToDo(inputValue);
-			setCounterValue(counterValue + 1);
+			
 			setInputValue("");
 		}
 	};
@@ -50,7 +50,14 @@ const ToDoList = () => {
 		setListValue((prevState) =>
 			prevState.filter((text, index) => index !== indexItem)
 		);
-		setCounterValue(counterValue - 1);
+		fetch("https://assets.breatheco.de/apis/fake/todos/user/oriol", {
+				method: "PUT",
+				body: JSON.stringify(listValue.filter((text, index) => index !== indexItem)),
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+		
 	};
 
     const DeleteAllItems = (indexItem) => {
@@ -77,7 +84,7 @@ const ToDoList = () => {
 			<ul>
 				{listValue.map((text, index) => (
 					<li key={index} className="list-group-item index">
-						{text}
+						{text.label}
 						<button
 							className="btn justify-text-end "
 							onClick={() => DeleteItems(index)}>
@@ -87,14 +94,9 @@ const ToDoList = () => {
 				))}
 				<li className="list-group-item float-start border-0">
 					{"" +
-						(counterValue == 0
-							? "Nothign to do, chill then!"
-							: counterValue + " still to do...")}
-                            <button
-							className="btn justify-text-end "
-							onClick={() => DeleteAllItems(index)}>
-							<i className="fas fa-times float-end" />
-						</button>
+					
+							 listValue.length + " still to do..."}
+                            
 				</li>
 			</ul>
 		</div>
